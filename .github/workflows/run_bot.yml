@@ -2,9 +2,8 @@ name: Daily Threads Post
 
 on:
   schedule:
-    # Run every day at 12:00 UTC (adjust cron if needed)
     - cron: '0 12 * * *'
-  workflow_dispatch: # Manual run from Actions tab
+  workflow_dispatch:
 
 jobs:
   run-bot:
@@ -13,12 +12,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
+
+      - name: Check required secrets
+        run: |
+          if [ -z "${{ secrets.GEMINI_API_KEY }}" ]; then echo "::error::GEMINI_API_KEY is not set in repo Secrets"; exit 1; fi
+          if [ -z "${{ secrets.THREADS_ACCESS_TOKEN }}" ]; then echo "::error::THREADS_ACCESS_TOKEN is not set in repo Secrets"; exit 1; fi
+          if [ -z "${{ secrets.THREADS_USER_ID }}" ]; then echo "::error::THREADS_USER_ID is not set in repo Secrets"; exit 1; fi
 
       - name: Install dependencies
         run: npm ci
