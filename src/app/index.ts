@@ -22,6 +22,7 @@ async function main(): Promise<void> {
     const deps = buildContainer();
     if (isRunOnce) {
       await runBot(deps);
+      process.exit(0);
     } else {
       scheduleDaily(deps);
     }
