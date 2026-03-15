@@ -1,0 +1,90 @@
+import 'dotenv/config';
+import cron from 'node-cron';
+import { readFile, writeFile, unlink } from 'node:fs/promises';
+import { getRandomTopic, generatePost } from './ai.js';
+import { publishToThreads } from './threads.js';
+import type { PostCache } from './types.js';
+
+const CACHE_FILE = './data/post-cache.json';
+
+async function getCache(): Promise<PostCache | null> {
+  try {
+    const raw = await readFile(CACHE_FILE, 'utf8');
+    return JSON.parse(raw) as PostCache;
+  } catch {
+    return null;
+  }
+}
+
+async function updateCache(data: PostCache | null): Promise<void> {
+  try {
+    if (data) {
+      await writeFile(CACHE_FILE, JSON.stringify(data, null, 2));
+    } else {
+      await unlink(CACHE_FILE);
+    }
+  } catch {
+    // Ignore if file doesn't exist during unlink
+  }
+}
+
+export async function runBot(): Promise<{ creation_id: string }> {
+  let post = await getCache();
+
+  if (post) {
+    console.log(`[Cache] Found pending post: "${post.topic}"`);
+  } else {
+    const topic = await getRandomTopic();
+    const text = await generatePost();
+    post = { topic, text };
+    console.log(`[AI] Generated: "${topic}"`);
+  }
+
+  try {
+    const result = await publishToThreads(post.text);
+    await updateCache(null);
+    console.log('✅ Published successfully:', result.creation_id);
+    return result;
+  } catch (err) {
+    await updateCache(post);
+    console.error(
+      '❌ Publication failed. Content saved to cache:',
+      (err as Error).message
+    );
+    throw err;
+  }
+}
+
+function scheduleDaily(): void {
+  const hour = Math.floor(Math.random() * 23);
+  const minute = Math.floor(Math.random() * 60);
+  const cronExpression = `${minute} ${hour} * * *`;
+
+  console.log(
+    `📅 Следующий пост запланирован на ${hour}:${minute.toString().padStart(2, '0')}`
+  );
+
+  const task = cron.schedule(cronExpression, async () => {
+    try {
+      await runBot();
+    } catch (err) {
+      console.error('Ошибка при выполнении запланированного поста:', err);
+    } finally {
+      task.stop();
+      scheduleDaily();
+    }
+  });
+}
+
+const isRunOnce = process.argv.some((arg) => arg.includes('once'));
+
+try {
+  if (isRunOnce) {
+    await runBot();
+  } else {
+    scheduleDaily();
+  }
+} catch (err) {
+  console.error('Fatal Error:', err);
+  process.exit(1);
+}

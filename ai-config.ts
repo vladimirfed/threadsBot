@@ -24,4 +24,4 @@ export const CONFIG = {
   maxStyleExamples: 15,
   maxRetries: 2,
   threadCharLimit: 500,
-};
+} as const;
