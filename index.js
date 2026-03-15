@@ -32,7 +32,7 @@ export async function runBot() {
     console.log(`[Cache] Found pending post: "${post.topic}"`);
   } else {
     const topic = await getRandomTopic();
-    const text = await generatePost(topic);
+    const text = await generatePost();
     post = { topic, text };
     console.log(`[AI] Generated: "${topic}"`);
   }
@@ -51,12 +51,22 @@ export async function runBot() {
 
 /** Schedule: Starts a random delay at 14:00 */
 function scheduleDaily() {
-  cron.schedule('0 14 * * *', () => {
-    const delay = Math.floor(Math.random() * THREE_HOURS_MS);
-    console.log(`🕒 Post scheduled in ${Math.round(delay / 60000)} mins.`);
-    setTimeout(() => runBot().catch(console.error), delay);
+  const hour = Math.floor(Math.random() * 23); // 0-23
+  const minute = Math.floor(Math.random() * 60); // 0-59
+  const cronExpression = `${minute} ${hour} * * *`; 
+  
+  console.log(`📅 Следующий пост запланирован на ${hour}:${minute.toString().padStart(2, '0')}`);
+
+  const task = cron.schedule(cronExpression, async () => {
+    try {
+      await runBot();
+    } catch (err) {
+      console.error('Ошибка при выполнении запланированного поста:', err);
+    } finally {
+      task.stop();
+      scheduleDaily(); 
+    }
   });
-  console.log('📅 Bot active: Posting daily between 14:00 and 17:00');
 }
 
 const isRunOnce = process.argv.some(arg => arg.includes('once'));

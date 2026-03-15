@@ -1,18 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-
-// --- Configuration ---
-const CONFIG = {
-  model: 'gemini-2.5-flash',
-  paths: {
-    messages: path.resolve('data/personalMessages.json'),
-    topics: path.resolve('data/topics.json'),
-  },
-  maxStyleExamples: 20,
-  maxRetries: 2,
-  threadCharLimit: 500,
-};
+import { CONFIG, PROMPT } from './ai-config.js';
 
 // --- Helpers ---
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -45,31 +33,19 @@ async function getStyleContext() {
   return messages.join('\n\n---\n\n');
 }
 
-export async function generatePost(topic) {
+export async function generatePost() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error('GEMINI_API_KEY is missing');
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: CONFIG.model });
   const style = await getStyleContext();
+  const topic = await getRandomTopic();
 
-  const prompt = `
-    Context: You are my digital twin.
-    Task: Write a Threads post about: ${topic}.
-    Style Reference:
-    ${style}
-    
-    Requirements:
-    - Use my tone, vocabulary, and sentence length.
-    - Be slightly clickbaity with a hook for comments.
-    - NO intro text, NO quotes.
-    - Max ${CONFIG.threadCharLimit} characters.
-  `.trim();
+  const result = await model.generateContent(PROMPT + `\n\nTopic: ${topic}\n\nStyle reference: ${style}`);
+  const text = result.response.text().trim();
 
-      const result = await model.generateContent(prompt);
-      const text = result.response.text().trim();
-      
-      return text.length > CONFIG.threadCharLimit 
-        ? text.slice(0, CONFIG.threadCharLimit) 
-        : text;
+  return text.length > CONFIG.threadCharLimit 
+    ? text.slice(0, CONFIG.threadCharLimit) 
+    : text;
 }
