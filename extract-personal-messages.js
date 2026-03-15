@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const inputPath = path.join(__dirname, 'chatHistory.json');
 const outputPath = path.join(__dirname, 'personalMessages.json');
@@ -23,7 +23,8 @@ const result = messages
   .filter((msg) => msg.from === 'Vladimir F')
   .map((msg) => getText(msg))
   .filter((text) => text.length >= 35)
-  .map((text) => ({ text }));
+  .map((text) => ({ text }))
+  .slice(0, 50);
 
 fs.writeFileSync(outputPath, JSON.stringify(result, null, 2), 'utf8');
 console.log(`Done. Saved ${result.length} messages to personalMessages.json`);
