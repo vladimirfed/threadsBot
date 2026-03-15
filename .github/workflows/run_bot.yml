@@ -33,6 +33,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Ensure data directory
+        run: mkdir -p data
+
       - name: Run bot once
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

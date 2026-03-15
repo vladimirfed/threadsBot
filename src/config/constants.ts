@@ -22,13 +22,22 @@ export const AI_CONFIG = {
   threadCharLimit: 500,
 } as const;
 
+export const TOPICS = [
+  'один лайфхак по продуктивности, который реально работает',
+  'что бы я сказал себе 5 лет назад',
+  'преимущества индексного инвестирования',
+  'пузырь на рынке недвижимости в Праге',
+  'почему женщинам слоднее заработать деньги (в про феменистичном контексте)',
+  'какие льготы должны быть у женщин (в про феменистичном контексте)',
+  'усталость от думскроллинга и как с ней бороться',
+  'новости ИИ (краткий обзор с комментарием)',
+  'новости финансового рынка мира/Америки (краткий обзор с комментарием)',
+] as const;
+
 export const PATH_CONFIG = {
   dataDir: path.resolve('data'),
   get messages(): string {
     return path.join(this.dataDir, 'personalMessages.json');
-  },
-  get topics(): string {
-    return path.join(this.dataDir, 'topics.json');
   },
   get postCache(): string {
     return path.join(this.dataDir, 'post-cache.json');

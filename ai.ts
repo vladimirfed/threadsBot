@@ -1,16 +1,15 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { readFile } from 'node:fs/promises';
-import { CONFIG, PROMPT } from './ai-config.js';
-import type { TopicsInput, PersonalMessage } from './types.js';
+import { CONFIG, PROMPT, TOPICS } from './ai-config.js';
+import type { PersonalMessage } from './types.js';
 
 const loadJson = async <T>(filePath: string): Promise<T> =>
   JSON.parse(await readFile(filePath, 'utf8')) as T;
 
 export async function getRandomTopic(): Promise<string> {
-  const topics = await loadJson<TopicsInput>(CONFIG.paths.topics);
-  const list = Array.isArray(topics) ? topics : Object.values(topics);
+  const list = [...TOPICS];
   if (!list.length) throw new Error('Topics list is empty');
-  return list[Math.floor(Math.random() * list.length)] as string;
+  return list[Math.floor(Math.random() * list.length)] ?? '';
 }
 
 async function getStyleContext(): Promise<string> {
