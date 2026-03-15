@@ -36,6 +36,11 @@ jobs:
       - name: Ensure data directory
         run: mkdir -p data
 
+      - name: Random delay
+        run: |
+          DELAY=$((RANDOM % 3600))
+          sleep $DELAY
+
       - name: Run bot once
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
