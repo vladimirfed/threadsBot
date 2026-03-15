@@ -26,7 +26,7 @@ export class GeminiService implements IAIPostProvider {
     const topics = await loadJson<TopicsInput>(PATH_CONFIG.topics);
     const list = Array.isArray(topics) ? topics : Object.values(topics);
     if (!list.length) throw new AIProviderError('Topics list is empty');
-    return list[Math.floor(Math.random() * list.length)] as string;
+    return list[Math.floor(Math.random() * list.length)] ?? '';
   }
 
   /**
@@ -60,7 +60,7 @@ export class GeminiService implements IAIPostProvider {
   private async getStyleContext(): Promise<string> {
     type MessagesData = { messages?: unknown[] } | PersonalMessage[];
     const data = await loadJson<MessagesData>(PATH_CONFIG.messages);
-    const messages = (Array.isArray(data) ? data : data.messages ?? [])
+    const messages = (Array.isArray(data) ? data : (data.messages ?? []))
       .map((m: unknown) =>
         typeof m === 'string' ? m : (m as PersonalMessage)?.text
       )
