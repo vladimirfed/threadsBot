@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import axios, { AxiosError } from 'axios';
-import type { PublishResult, ThreadsContainerResponse } from './types.js';
+import type { PublishResult, ThreadsContainerResponse } from './src/types/index.js';
 
 const THREADS_MAX_LENGTH = 500;
 const { THREADS_USER_ID, THREADS_ACCESS_TOKEN } = process.env;

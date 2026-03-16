@@ -3,7 +3,7 @@ import cron from 'node-cron';
 import { readFile, writeFile, unlink } from 'node:fs/promises';
 import { getRandomTopic, generatePost } from './ai.js';
 import { publishToThreads } from './threads.js';
-import type { PostCache } from './types.js';
+import type { PostCache } from './src/types/index.js';
 
 const CACHE_FILE = './data/post-cache.json';
 

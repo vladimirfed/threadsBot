@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { readFile } from 'node:fs/promises';
-import type { PersonalMessage } from './types.js';
+import type { PersonalMessage } from './src/types/index.js';
 import { TOPICS, PROMPT, CONFIG, AI_CONFIG } from './src/config/constants.js';
 
 const loadJson = async <T>(filePath: string): Promise<T> =>
