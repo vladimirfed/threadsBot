@@ -33,9 +33,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Ensure data directory
-        run: mkdir -p data
-
       - name: Random delay
         run: |
           DELAY=$((RANDOM % 3600))
