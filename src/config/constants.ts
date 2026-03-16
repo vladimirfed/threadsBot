@@ -34,7 +34,7 @@ export const TOPICS = [
   'новости финансового рынка мира/Америки (краткий обзор с комментарием)',
 ] as const;
 
-export const PATH_CONFIG = {
+export const CONFIG = {
   dataDir: path.resolve('data'),
   get messages(): string {
     return path.join(this.dataDir, 'personalMessages.json');
