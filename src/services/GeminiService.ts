@@ -16,7 +16,10 @@ async function loadJsonIfExists<T>(filePath: string): Promise<T | null> {
   try {
     return await loadJson<T>(filePath);
   } catch (err) {
-    const isEnoent = err instanceof Error && 'code' in err && (err as NodeJS.ErrnoException).code === 'ENOENT';
+    const isEnoent =
+      err instanceof Error &&
+      'code' in err &&
+      (err as NodeJS.ErrnoException).code === 'ENOENT';
     if (isEnoent) return null;
     throw err;
   }
