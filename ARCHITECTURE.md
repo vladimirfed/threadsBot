@@ -27,14 +27,11 @@ src/
 │   ├── GeminiService.ts      # AI post generation (implements IAIPostProvider)
 │   ├── ThreadsService.ts     # Threads API publish (implements IThreadsPublisher)
 │   ├── PostCacheService.ts   # File-based post cache (implements IPostCacheStore)
-│   ├── TelegramParseService.ts # Telegram chat export → personalMessages.json
 │   └── index.ts
 ├── app/              # Application entry and orchestration
 │   ├── runBot.ts     # runBot(deps) — one publish cycle with DI
 │   ├── scheduler.ts  # scheduleDaily(deps) — node-cron daily run
 │   └── index.ts      # buildContainer(), main(), CLI (once vs scheduled)
-├── scripts/          # Standalone scripts
-│   └── extract-personal-messages.ts  # Telegram → personalMessages.json
 └── index.ts          # Entry point (imports app)
 ```
 
@@ -83,7 +80,7 @@ src/
 
 - **Clean Architecture**: App and core depend on interfaces; services implement them. Config and types are shared; no business logic in config or utils.
 - **SOLID**:  
-  - **S**ingle responsibility: one service per concern (Gemini, Threads, cache, Telegram parsing).  
+  - **S**ingle responsibility: one service per concern (Gemini, Threads, cache).  
   - **O**pen/closed: new AI or publisher = new class implementing the same interface.  
   - **L**iskov: implementations are substitutable (e.g. another cache store).  
   - **I**nterface segregation: small contracts (e.g. `IAIPostProvider`, `IThreadsPublisher`).  
@@ -124,7 +121,8 @@ src/
 
 - **Bot (scheduled)**: `npm run dev` or `npm start` (after `npm run build`).
 - **Bot (single run)**: `npm run dev:once` or `npm run once`.
-- **Extract personal messages**: Place `chatHistory.json` in `data/`, then run `npm run extract-messages`. Writes `data/personalMessages.json` for style context.
+
+**Style context**: Place `data/textStyle.txt` with your persona and style description. Its full content is passed to Gemini as "Style reference" in the prompt.
 
 ---
 

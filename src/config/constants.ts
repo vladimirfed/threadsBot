@@ -17,7 +17,6 @@ Task: Напиши тред для Threads на тему 'Topic' указанн�
 
 export const AI_CONFIG = {
   model: 'gemini-2.5-flash',
-  maxStyleExamples: 15,
   maxRetries: 2,
   threadCharLimit: 500,
 } as const;
@@ -36,8 +35,8 @@ export const TOPICS = [
 
 export const CONFIG = {
   dataDir: path.resolve('data'),
-  get messages(): string {
-    return path.join(this.dataDir, 'personalMessages.json');
+  get textStyle(): string {
+    return path.join(this.dataDir, 'textStyle.txt');
   },
   get postCache(): string {
     return path.join(this.dataDir, 'post-cache.json');

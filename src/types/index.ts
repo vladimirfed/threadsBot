@@ -33,19 +33,3 @@ export interface GeminiError extends Error {
 
 /** Topic list: array or object of topics */
 export type TopicsInput = string[] | Record<string, string>;
-
-/** Personal message entry in JSON */
-export interface PersonalMessage {
-  text?: string;
-}
-
-/** Chat message from Telegram export */
-export interface ChatMessage {
-  from?: string;
-  text?: string | string[];
-}
-
-/** Chat history structure from Telegram export */
-export interface ChatHistory {
-  messages?: ChatMessage[];
-}

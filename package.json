@@ -9,7 +9,6 @@
     "once": "node dist/index.js --once",
     "dev": "tsx src/index.ts",
     "dev:once": "tsx src/index.ts --once",
-    "extract-messages": "tsx src/scripts/extract-personal-messages.ts",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,json,md}\""
   },

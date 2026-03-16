@@ -1,29 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { readFile } from 'node:fs/promises';
 import type { IAIPostProvider } from '../core/interfaces.js';
-import type { PersonalMessage } from '../types/index.js';
 import { PROMPT, AI_CONFIG, PATH_CONFIG, TOPICS } from '../config/index.js';
 import { AIProviderError } from '../core/errors.js';
 import { logger } from '../utils/logger.js';
 import { truncate } from '../utils/string.js';
-
-async function loadJson<T>(filePath: string): Promise<T> {
-  const raw = await readFile(filePath, 'utf8');
-  return JSON.parse(raw) as T;
-}
-
-async function loadJsonIfExists<T>(filePath: string): Promise<T | null> {
-  try {
-    return await loadJson<T>(filePath);
-  } catch (err) {
-    const isEnoent =
-      err instanceof Error &&
-      'code' in err &&
-      (err as NodeJS.ErrnoException).code === 'ENOENT';
-    if (isEnoent) return null;
-    throw err;
-  }
-}
 
 /**
  * Gemini-based AI post generation service.
@@ -42,7 +23,7 @@ export class GeminiService implements IAIPostProvider {
   }
 
   /**
-   * Generates a Threads post using Gemini with style context from personal messages.
+   * Generates a Threads post using Gemini with style context from textStyle.txt.
    * @returns Post text truncated to threadCharLimit
    */
   async generatePost(): Promise<string> {
@@ -67,21 +48,21 @@ export class GeminiService implements IAIPostProvider {
   }
 
   /**
-   * Loads style examples from personal messages JSON, or empty string if file is missing (e.g. in CI).
+   * Loads full content of textStyle.txt (persona and style context), or empty string if file is missing.
    */
   private async getStyleContext(): Promise<string> {
-    type MessagesData = { messages?: unknown[] } | PersonalMessage[];
-    const data = await loadJsonIfExists<MessagesData>(PATH_CONFIG.messages);
-    if (data == null) {
-      logger.info('No personalMessages.json found, using empty style context');
-      return '';
+    try {
+      return await readFile(PATH_CONFIG.textStyle, 'utf8');
+    } catch (err) {
+      const isEnoent =
+        err instanceof Error &&
+        'code' in err &&
+        (err as NodeJS.ErrnoException).code === 'ENOENT';
+      if (isEnoent) {
+        logger.info('No textStyle.txt found, using empty style context');
+        return '';
+      }
+      throw err;
     }
-    const messages = (Array.isArray(data) ? data : (data.messages ?? []))
-      .map((m: unknown) =>
-        typeof m === 'string' ? m : (m as PersonalMessage)?.text
-      )
-      .filter(Boolean)
-      .slice(0, AI_CONFIG.maxStyleExamples) as string[];
-    return messages.join('\n\n---\n\n');
   }
 }
