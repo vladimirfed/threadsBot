@@ -44,6 +44,11 @@ jobs:
             cp data.example/textStyle.txt data/textStyle.txt
           fi
 
+      - name: Random delay
+        run: |
+          DELAY=$((RANDOM % 3600))
+          sleep $DELAY
+
       - name: Run bot once
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
