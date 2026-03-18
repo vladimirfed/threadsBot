@@ -33,6 +33,17 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Prepare data directory
+        env:
+          TEXT_STYLE_CONTENT: ${{ secrets.TEXT_STYLE_CONTENT }}
+        run: |
+          mkdir -p data
+          if [ -n "$TEXT_STYLE_CONTENT" ]; then
+            printf '%s' "$TEXT_STYLE_CONTENT" > data/textStyle.txt
+          else
+            cp data.example/textStyle.txt data/textStyle.txt
+          fi
+
       - name: Random delay
         run: |
           DELAY=$((RANDOM % 3600))

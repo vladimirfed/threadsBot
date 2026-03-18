@@ -1,0 +1,5 @@
+# Style context for Threads bot (example)
+# Copy this file to data/textStyle.txt and customize, or set GitHub secret TEXT_STYLE_CONTENT for CI.
+
+**Тональность:** Неформальная, дружелюбная. Короткие предложения.
+**Ограничения:** 10–460 символов, только текст, без ссылок.
