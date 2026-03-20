@@ -2,7 +2,7 @@ name: Daily Threads Post
 
 on:
   schedule:
-    - cron: '0 12 * * *'
+    - cron: '0 10 * * *'
   workflow_dispatch:
 
 jobs:
@@ -46,7 +46,7 @@ jobs:
 
       - name: Random delay
         run: |
-          DELAY=$((RANDOM % 3600))
+          DELAY=$((RANDOM % 900))
           sleep $DELAY
 
       - name: Run bot once
