@@ -13,7 +13,7 @@ export type Env = z.infer<typeof envSchema>;
  * Validates and returns environment variables. Throws if required vars are missing when strict.
  */
 export function loadEnv(strict = true): Env {
-  const parsed = envSchema.safeParse(process.env);
+  const parsed = envSchema.safeParse(Bun.env);
   if (!parsed.success) {
     throw new Error(`Invalid environment: ${parsed.error.message}`);
   }

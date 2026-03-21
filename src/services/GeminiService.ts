@@ -1,5 +1,4 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { readFile } from 'node:fs/promises';
 import type { IAIPostProvider } from '../core/interfaces.js';
 import { PROMPT, AI_CONFIG, PATH_CONFIG, TOPICS } from '../config/index.js';
 import { AIProviderError } from '../core/errors.js';
@@ -51,18 +50,11 @@ export class GeminiService implements IAIPostProvider {
    * Loads full content of textStyle.txt (persona and style context), or empty string if file is missing.
    */
   private async getStyleContext(): Promise<string> {
-    try {
-      return await readFile(PATH_CONFIG.textStyle, 'utf8');
-    } catch (err) {
-      const isEnoent =
-        err instanceof Error &&
-        'code' in err &&
-        (err as NodeJS.ErrnoException).code === 'ENOENT';
-      if (isEnoent) {
-        logger.info('No textStyle.txt found, using empty style context');
-        return '';
-      }
-      throw err;
+    const file = Bun.file(PATH_CONFIG.textStyle);
+    if (!(await file.exists())) {
+      logger.info('No textStyle.txt found, using empty style context');
+      return '';
     }
+    return file.text();
   }
 }

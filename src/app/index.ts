@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { loadEnv } from '../config/index.js';
 import { GeminiService, ThreadsService, PostCacheService } from '../services/index.js';
 import { runBot, type RunBotDependencies } from './runBot.js';
@@ -15,7 +14,7 @@ function buildContainer(): RunBotDependencies {
   };
 }
 
-const isRunOnce = process.argv.some((arg) => arg.includes('once'));
+const isRunOnce = Bun.argv.some((arg) => arg.includes('once'));
 
 async function main(): Promise<void> {
   try {

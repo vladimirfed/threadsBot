@@ -1,4 +1,4 @@
-import { readFile, writeFile, unlink } from 'node:fs/promises';
+import { unlink } from 'node:fs/promises';
 import type { PostCache } from '../types/index.js';
 import type { IPostCacheStore } from '../core/interfaces.js';
 import { PATH_CONFIG } from '../config/index.js';
@@ -16,7 +16,9 @@ export class PostCacheService implements IPostCacheStore {
    */
   async get(): Promise<PostCache | null> {
     try {
-      const raw = await readFile(CACHE_FILE, 'utf8');
+      const file = Bun.file(CACHE_FILE);
+      if (!(await file.exists())) return null;
+      const raw = await file.text();
       return JSON.parse(raw) as PostCache;
     } catch {
       return null;
@@ -30,7 +32,7 @@ export class PostCacheService implements IPostCacheStore {
   async set(data: PostCache | null): Promise<void> {
     try {
       if (data) {
-        await writeFile(CACHE_FILE, JSON.stringify(data, null, 2));
+        await Bun.write(CACHE_FILE, JSON.stringify(data, null, 2));
         logger.debug({ topic: data.topic }, 'Cache updated');
       } else {
         await unlink(CACHE_FILE).catch(() => {});
