@@ -7,8 +7,8 @@ import type { PostCache, PublishResult } from '../types/index.js';
 export interface IAIPostProvider {
   /** Returns a random topic from the configured list */
   getRandomTopic(): Promise<string>;
-  /** Generates post text for the given topic (or uses internal topic) */
-  generatePost(): Promise<string>;
+  /** Generates post text. Uses the provided topic or picks a random one. */
+  generatePost(topic?: string): Promise<string>;
 }
 
 /**

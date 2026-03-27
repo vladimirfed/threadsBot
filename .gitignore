@@ -4,3 +4,5 @@ data/
 *.log
 dist/
 bun.lockb
+.vercel
+.env*.local

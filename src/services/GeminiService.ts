@@ -23,16 +23,17 @@ export class GeminiService implements IAIPostProvider {
 
   /**
    * Generates a Threads post using Gemini with style context from textStyle.txt.
+   * @param topic - Custom topic to use; if omitted, picks a random one
    * @returns Post text truncated to threadCharLimit
    */
-  async generatePost(): Promise<string> {
+  async generatePost(topic?: string): Promise<string> {
     const genAI = new GoogleGenerativeAI(this.apiKey);
     const model = genAI.getGenerativeModel({ model: AI_CONFIG.model });
     const style = await this.getStyleContext();
-    const topic = await this.getRandomTopic();
+    const resolvedTopic = topic ?? (await this.getRandomTopic());
 
     const result = await model.generateContent(
-      `${PROMPT}\n\nTopic: ${topic}\n\nStyle reference: ${style}`
+      `${PROMPT}\n\nTopic: ${resolvedTopic}\n\nStyle reference: ${style}`
     );
     const text = result.response.text().trim();
     const final = truncate(text, AI_CONFIG.threadCharLimit);
